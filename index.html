@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>layui日历</title>
+  <link rel="stylesheet" href="layui/css/layui.css">
+  <link rel="stylesheet" href="css/date.css">
+  <style>
+		#test-n2 .layui-laydate-main {
+            width: 700px;
+        }
+
+        #test-n2 .layui-laydate-content td, #test-n2 .layui-laydate-content th {
+            width: 100px;
+            height: 60px;
+        }
+
+        .laydate-day-mark {
+            background-color: #5FB878;
+            color: white;
+        }
+
+        span.laydate-day-mark {
+            line-height: 60px;
+        }
+
+        .laydate-day-mark::after {
+            background-color: #5FB878;
+        }
+  </style>
+</head>
+<body>
+ 
+<!-- 你的HTML代码 -->
+
+<div class="layui-container" style="padding: 15px;">  
+  <div class="layui-row">
+    <div class="layui-col-md12">
+    <blockquote class="layui-elem-quote">layui日历</blockquote>
+    <div class="layui-inline" id="test-n2" ></div>
+    
+    </div>
+  </div>
+</div>
+
+
+
+ 
+<script src="layui/layui.js"></script>
+<script>
+layui.use(['layer', 'form', 'jquery', 'laydate'], function () {
+        var layer = layui.layer,
+                $ = layui.jquery,
+                laydate = layui.laydate,
+                form = layui.form;
+
+
+        //定义json
+        var data = {'2018-12-01': '', '2018-12-02': '', '2018-12-03': ''};
+        var new_date = new Date();
+        loding_date(new_date, data);
+
+
+        //日历插件调用方法
+        function loding_date(date_value, data) {
+
+            laydate.render({
+                elem: '#test-n2'
+                , type: 'date'
+                , theme: 'grid'
+                , max: '2099-06-16 23:59:59'
+                , position: 'static'
+                , range: false
+                , value: date_value
+                , isInitValue: false
+                , calendar: false
+                , btns: false
+                , ready: function (value) {
+                    //console.log(value);
+                    hide_mr(value);
+                }
+                , done: function (value, date, endDate) {
+                    
+                    chose_moban(value, data)
+                }
+                , change: function (value, date) {
+                    hide_mr(date);
+					
+                }
+                , mark: data//重要json！
+
+            });
+        }
+
+
+        function hide_mr(value) {
+            var mm = value.year + '-' + value.month + '-' + value.date;
+
+            $('.laydate-theme-grid table tbody').find('[lay-ymd="' + mm + '"]').removeClass('layui-this');
+        }
+
+        //定义添加/编辑标注方法
+        function chose_moban(obj_date, markJson) {
+            $('#test-n2').html('');//重要！由于插件是嵌套指定容器，再次调用前需要清空原日历控件
+            if (markJson.hasOwnProperty(obj_date)) {
+                delete markJson[obj_date]
+            } else {
+                //添加属性
+                markJson[obj_date] = ''
+            }
+            loding_date(obj_date, markJson);//重要！，再标注一个日期后会刷新当前日期变为初始值，所以必须调用当前选定日期。
+
+        }
+
+
+    })
+</script> 
+</body>
+</html>
